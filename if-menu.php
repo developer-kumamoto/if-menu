@@ -33,21 +33,18 @@ class If_Menu {
 
 	public static function init() {
     global $pagenow;
-		self::$has_custom_walker = 'Walker_Nav_Menu_Edit' !== apply_filters( 'wp_edit_nav_menu_walker', 'Walker_Nav_Menu_Edit' );
 
     load_plugin_textdomain( 'if-menu', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 		if( is_admin() ) {
-			add_action( 'admin_init', 'If_Menu::admin_init' );
+			add_action( 'admin_enqueue_scripts', 'If_Menu::admin_init' );
 			add_action( 'wp_update_nav_menu_item', 'If_Menu::wp_update_nav_menu_item', 10, 2 );
-			add_filter( 'wp_edit_nav_menu_walker', create_function( '', 'return "If_Menu_Walker_Nav_Menu_Edit";' ) );
+			add_filter( 'wp_edit_nav_menu_walker', 'If_Menu::custom_walker' ); 
       add_action( 'wp_nav_menu_item_custom_fields', 'If_Menu::menu_item_fields' );
       add_action( 'wp_nav_menu_item_custom_title', 'If_Menu::menu_item_title' );
 
-      if ( self::$has_custom_walker && 1 != get_option( 'if-menu-hide-notice', 0 ) ) {
-        add_action( 'admin_notices', 'If_Menu::admin_notice' );
-        add_action( 'wp_ajax_if_menu_hide_notice', 'If_Menu::hide_admin_notice' );
-      }
+      add_action( 'admin_notices', 'If_Menu::admin_notice' );
+      add_action( 'wp_ajax_if_menu_hide_notice', 'If_Menu::hide_admin_notice' );
 
       if ($pagenow !== 'nav-menus.php') {
         add_filter( 'wp_get_nav_menu_items', 'If_Menu::wp_get_nav_menu_items' );
@@ -57,9 +54,9 @@ class If_Menu {
     }
 	}
 
-	public static function admin_notice() {
+  public static function admin_notice() {
 
-		if( current_user_can( 'edit_theme_options' ) ) {
+    if( current_user_can( 'edit_theme_options' ) && has_filter( 'wp_edit_nav_menu_walker' ) && 1 != get_option( 'if-menu-hide-notice', 0 ) ) {
       ?>
       <div class="notice error is-dismissible if-menu-notice">
 				<p><?php printf(
@@ -76,9 +73,9 @@ class If_Menu {
 				) ?></p>
       </div>
       <?php
-		}
+    }
 
-	}
+  }
 
   public static function hide_admin_notice() {
     $re = update_option( 'if-menu-hide-notice', 1 );
@@ -144,24 +141,13 @@ class If_Menu {
 	}
 
 	public static function admin_init() {
-		global $pagenow, $wp_version;
+		global $pagenow;
 
-    if ( $pagenow == 'nav-menus.php' || self::$has_custom_walker ) {
+    if ( $pagenow == 'nav-menus.php' ) {
       wp_enqueue_script( 'if-menu-js', plugins_url( 'if-menu.js', __FILE__ ), array( 'jquery' ) );
       wp_enqueue_style( 'if-menu-css', plugins_url( 'if-menu.css', __FILE__ ) );
     }
 
-		if ( $pagenow == 'nav-menus.php' || defined( 'DOING_AJAX' ) ) {
-
-      require_once( ABSPATH . 'wp-admin/includes/nav-menu.php' );
-
-      if ( version_compare( $wp_version, '4.5.0', '>=' ) ){
-        require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu-4.5.php' );
-      } else {
-        require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu.php' );
-      }
-
-		}
 	}
 
   public static function menu_item_fields( $item_id ) {
@@ -236,6 +222,18 @@ class If_Menu {
       }
       echo '</span>';
     }
+  }
+
+  public static function custom_walker(){
+    global $wp_version;
+    if ( version_compare( $wp_version, '4.7.0', '>=' ) ){
+      require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu-4.5.php' );
+    } else if ( version_compare( $wp_version, '4.5.0', '>=' ) ){
+      require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu-4.5.php' );
+    } else {
+      require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu.php' );
+    }
+    return 'If_Menu_Walker_Nav_Menu_Edit';
   }
 
 	public static function wp_update_nav_menu_item( $menu_id, $menu_item_db_id ) {
