@@ -62,7 +62,18 @@ class If_Menu {
 		if( current_user_can( 'edit_theme_options' ) ) {
       ?>
       <div class="notice error is-dismissible if-menu-notice">
-        <p><?php printf( __( '<b>If Menu</b> plugin detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu' ), 'https://wordpress.org/plugins/if-menu/faq/' ) ?></p>
+				<p><?php printf(
+					wp_kses(
+						/* translators: error message for plugin conflict. */
+						__( 'If Menu plugin detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu' ),
+						array(
+							'a' => array(
+								'href' => array(),
+							),
+						)
+					),
+					esc_url( 'https://wordpress.org/plugins/if-menu/faq/' )
+				) ?></p>
       </div>
       <?php
 		}
@@ -173,32 +184,32 @@ class If_Menu {
 
     <p class="if-menu-enable description description-wide">
       <label>
-        <input <?php if (isset($if_menu_enable[0])) checked( $if_menu_enable[0], 1 ) ?> type="checkbox" value="1" class="menu-item-if-menu-enable" name="menu-item-if-menu-enable[<?php echo $item_id; ?>][]" />
-        <?php _e( 'Enable Conditional Logic', 'if-menu' ) ?>
+        <input <?php if (isset($if_menu_enable[0])) checked( $if_menu_enable[0], 1 ) ?> type="checkbox" value="1" class="menu-item-if-menu-enable" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]" />
+        <?php esc_html_e( 'Enable Conditional Logic', 'if-menu' ) ?>
       </label>
     </p>
 
     <div class="if-menu-conditions" style="display: <?php echo $if_menu_enable[0] ? 'block' : 'none' ?>">
       <?php for ($index = 0; $index < count($if_menu_enable); $index++) : ?>
         <p class="if-menu-condition description description-wide">
-          <select class="menu-item-if-menu-condition-type" id="edit-menu-item-if-menu-condition-type-<?php echo $item_id; ?>" name="menu-item-if-menu-condition-type[<?php echo $item_id; ?>][]">
-            <option <?php selected( 'show', $if_menu_condition_type[$index] ) ?> value="show"><?php _e( 'Show', 'if-menu' ) ?></option>
-            <option <?php selected( 'hide', $if_menu_condition_type[$index] ) ?> value="hide"><?php _e( 'Hide', 'if-menu' ) ?></option>
+          <select class="menu-item-if-menu-condition-type" id="edit-menu-item-if-menu-condition-type-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition-type[<?php echo esc_html( $item_id ); ?>][]">
+            <option <?php selected( 'show', $if_menu_condition_type[$index] ) ?> value="show"><?php esc_html_e( 'Show', 'if-menu' ) ?></option>
+            <option <?php selected( 'hide', $if_menu_condition_type[$index] ) ?> value="hide"><?php esc_html_e( 'Hide', 'if-menu' ) ?></option>
           </select>
-          <?php _e( 'if', 'if-menu' ); ?>
-          <select class="menu-item-if-menu-condition" id="edit-menu-item-if-menu-condition-<?php echo $item_id; ?>" name="menu-item-if-menu-condition[<?php echo $item_id; ?>][]">
+          <?php esc_html_e( 'if', 'if-menu' ); ?>
+          <select class="menu-item-if-menu-condition" id="edit-menu-item-if-menu-condition-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition[<?php echo esc_attr( $item_id ); ?>][]">
             <?php foreach ($groupedConditions as $group => $conditions) : ?>
-              <optgroup label="<?php echo $group ?>">
+              <optgroup label="<?php echo esc_attr( $group ) ?>">
                 <?php foreach( $conditions as $condition ): ?>
-                  <option <?php selected( $condition['name'], $if_menu_condition[$index] ) ?>><?php echo $condition['name']; ?></option>
+                  <option <?php selected( $condition['name'], $if_menu_condition[$index] ) ?>><?php echo esc_html( $condition['name'] ); ?></option>
                 <?php endforeach ?>
               </optgroup>
             <?php endforeach ?>
           </select>
-          <select class="menu-item-if-menu-enable-next" name="menu-item-if-menu-enable[<?php echo $item_id; ?>][]">
+          <select class="menu-item-if-menu-enable-next" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]">
             <option value="false">..</option>
-            <option value="and" <?php if (isset($if_menu_enable[$index + 1])) selected( 'and', $if_menu_enable[$index + 1] ) ?>><?php _e('AND', 'if-menu') ?></option>
-            <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php _e('OR', 'if-menu') ?></option>
+            <option value="and" <?php if (isset($if_menu_enable[$index + 1])) selected( 'and', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'AND', 'if-menu' ) ?></option>
+            <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>
           </select>
         </p>
       <?php endfor ?>
