@@ -48,11 +48,12 @@ Example of adding a new conditional statement for disaplying/hiding a menu item 
 // theme's functions.php or plugin file
 add_filter( 'if_menu_conditions', 'my_new_menu_conditions' );
 
-function my_new_menu_conditions( $conditions ) {
+function my_new_menu_conditions($conditions) {
   $conditions[] = array(
-    'name'    =>  'If single custom-post-type', // name of the condition
-    'condition' =>  function($item) {          // callback - must return TRUE or FALSE
-      return is_singular( 'my-custom-post-type' );
+    'id'        =>  'single-my-custom-post-type',                       // unique ID for the condition
+    'name'      =>  __('Single my-custom-post-type', 'i18n-domain'),    // name of the condition
+    'condition' =>  function($item) {                                   // callback - must return TRUE or FALSE
+      return is_singular('my-custom-post-type');
     }
   );
 

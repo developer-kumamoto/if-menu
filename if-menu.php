@@ -88,9 +88,10 @@ class If_Menu {
 	public static function get_conditions( $for_testing = false ) {
 		$conditions = apply_filters( 'if_menu_conditions', array() );
 
-		if( $for_testing ) {
+		if ($for_testing) {
 			$c2 = array();
-			foreach ( $conditions as $condition ) {
+			foreach ($conditions as $condition) {
+        $c2[$condition['id']] = $condition;
         $c2[$condition['name']] = $condition;
       }
 			$conditions = $c2;
@@ -164,7 +165,7 @@ class If_Menu {
 
     $groupedConditions = array();
     foreach ($conditions as $condition) {
-      $groupedConditions[isset($condition['group']) ? $condition['group'] : 'Other'][] = $condition;
+      $groupedConditions[isset($condition['group']) ? $condition['group'] : 'Custom'][] = $condition;
     }
     ?>
 
@@ -187,7 +188,7 @@ class If_Menu {
             <?php foreach ($groupedConditions as $group => $conditions) : ?>
               <optgroup label="<?php echo esc_attr( $group ) ?>">
                 <?php foreach( $conditions as $condition ): ?>
-                  <option <?php selected( $condition['name'], $if_menu_condition[$index] ) ?>><?php echo esc_html( $condition['name'] ); ?></option>
+                  <option value="<?php echo $condition['id'] ?>" <?php selected( $condition['id'], $if_menu_condition[$index] ) ?> <?php selected( $condition['name'], $if_menu_condition[$index] ) ?>><?php echo esc_html( $condition['name'] ); ?></option>
                 <?php endforeach ?>
               </optgroup>
             <?php endforeach ?>
@@ -238,6 +239,7 @@ class If_Menu {
 
 	public static function wp_update_nav_menu_item( $menu_id, $menu_item_db_id ) {
     if (isset($_POST['menu-item-if-menu-enable'])) {
+
       delete_post_meta( $menu_item_db_id, 'if_menu_enable' );
       delete_post_meta( $menu_item_db_id, 'if_menu_condition_type' );
       delete_post_meta( $menu_item_db_id, 'if_menu_condition' );
