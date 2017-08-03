@@ -144,8 +144,8 @@ class If_Menu {
 		global $pagenow;
 
     if ( $pagenow == 'nav-menus.php' ) {
-      wp_enqueue_script( 'if-menu-js', plugins_url( 'if-menu.js', __FILE__ ), array( 'jquery' ) );
-      wp_enqueue_style( 'if-menu-css', plugins_url( 'if-menu.css', __FILE__ ) );
+      wp_enqueue_script( 'if-menu-js', plugins_url( 'assets/if-menu.js', __FILE__ ), array( 'jquery' ) );
+      wp_enqueue_style( 'if-menu-css', plugins_url( 'assets/if-menu.css', __FILE__ ) );
     }
 
 	}
