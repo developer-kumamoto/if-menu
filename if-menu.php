@@ -1,12 +1,12 @@
 <?php
 /*
 Plugin Name: If Menu
-Plugin URI: http://wordpress.org/plugins/if-menu/
+Plugin URI: https://wordpress.org/plugins/if-menu/
 Description: Show/hide menu items with conditional statements
-Version: 0.6
+Version: 0.7
 Text Domain: if-menu
-Author: Andrei Igna
-Author URI: http://rokm.ro
+Author: Layered
+Author URI: https://layered.studio
 License: GPL2
 */
 

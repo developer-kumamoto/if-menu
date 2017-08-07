@@ -1,23 +1,38 @@
 === If Menu ===
 Contributors: andrei.igna
-Tags: menu, if, conditional, statements, hide, show, dispaly, roles, nav menu
+Tags: menu, if, rules, conditional, statements, hide, show, dispaly, roles, nav menu
 Requires at least: 4
-Tested up to: 4.6
+Tested up to: 4.8
 Stable tag: trunk
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Show/hide menu items with conditional statements
+Display or hide menu items with user-defines rules
 
 == Description ==
 
-Simple plugin that adds extra functionality to Menu Items. The plugin will allow to show or hide menu items based on condition statements (Is single page, User is Logged In, etc).
+**If Menu** is a WordPress plugin which adds extra functionality for menu items, making it easy to hide or display menu items based on user-defined rules. Example:
 
-The management is very easy, each menu item will have a "Enable Conditional Logic" check that will allow to select a conditional statement (Example in Screenshots)
+* display a menu item only if current `User is logged in`
+* hide menu items if `visiting from mobile device`
+* display menu items just for `Admins and Editors`
 
-Basic conditional statements are included in the plugin, other will be included in future releases or can be added by another plugins or themes.
+The plugin is easy to use, each menu item will have a “Change menu item visibility” option which will enable the selection of rules (example in Screenshots).
 
-Example of adding a new conditional statement is described in the FAQ section
+## Features
+
+* Basic set of visibility rules
+  * User state `User is logged in`
+  * User roles `Admin` `Editor` `Author` etc
+  * Page type `Front page` `Single page` `Single post`
+  * Device `Is Mobile`
+  * *more to be added with each plugin update*
+* Multiple rules - mix multiple rules for a menu item visibility
+  * show if `User is logged in` AND `Device is mobile`
+  * show if `User is Admin` AND `Is front page`
+* Support for adding your custom rules
+
+Example of adding a new rule is described in the FAQ section
 
 == Installation ==
 
@@ -25,7 +40,7 @@ To install the plugin, follow the steps below
 
 1. Upload `if-menu` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Enable conditional statements for your Menu Items in Appearance -> Menus page
+3. Enable visibility rules for your Menu Items in Appearance -> Menus page
 
 == Frequently Asked Questions ==
 
@@ -35,24 +50,24 @@ The code for modifying the menu items is limited and if other plugins/themes try
 
 This is an ongoing [issue with WordPress](http://core.trac.wordpress.org/ticket/18584) which hopefully will be fixed in a future release.
 
-Try to use just one plugin that changes the functionality for menu items.
+Try to use just one plugin that changes functionality for menu items.
 
 
-= How can I add a conditinal statement for menu items? =
+= How can I add a custom rule for menu items? =
 
-New conditional statements can be added by any other plugins or themes.
+New rules can be added by any other plugin or theme.
 
-Example of adding a new conditional statement for disaplying/hiding a menu item when current page is a custom-post-type.
+Example of adding a new custom rule for displaying/hiding a menu item when current page is a custom-post-type.
 
 `
 // theme's functions.php or plugin file
-add_filter( 'if_menu_conditions', 'my_new_menu_conditions' );
+add_filter('if_menu_conditions', 'my_new_menu_conditions');
 
 function my_new_menu_conditions($conditions) {
   $conditions[] = array(
-    'id'        =>  'single-my-custom-post-type',                       // unique ID for the condition
-    'name'      =>  __('Single my-custom-post-type', 'i18n-domain'),    // name of the condition
-    'condition' =>  function($item) {                                   // callback - must return TRUE or FALSE
+    'id'        =>  'single-my-custom-post-type',                       // unique ID for the rule
+    'name'      =>  __('Single my-custom-post-type', 'i18n-domain'),    // name of the rule
+    'condition' =>  function($item) {                                   // callback - must return Boolean
       return is_singular('my-custom-post-type');
     }
   );
@@ -63,7 +78,7 @@ function my_new_menu_conditions($conditions) {
 
 = Where do I find conditional functions? =
 
-WordPress provides [a lot of functions](http://codex.wordpress.org/Conditional_Tags) which can be used to create conditional statements for almost any combination that a theme/plugin developer can think of.
+WordPress provides [a lot of functions](http://codex.wordpress.org/Conditional_Tags) which can be used to create custom rules for almost any combination that a theme/plugin developer can think of.
 
 = Who made that really cool icon =
 
@@ -71,9 +86,16 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 
 == Screenshots ==
 
-1. Enable conditional statements for Menu Items
+1. Enable visibility rules for Menu Items
 
 == Changelog ==
+
+= 0.7 =
+*Release Date - 7 August 2017*
+
+* Improvement - Change labels & texts for easier use
+* Improvement - Better compatibility with translation plugins
+* Fix - Detection for conflict with other plugins
 
 = 0.6 =
 *Release Date - 27 August 2016*
