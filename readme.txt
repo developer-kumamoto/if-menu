@@ -90,7 +90,7 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 
 == Changelog ==
 
-= 0.7 =
+= 0.6.1 =
 *Release Date - 7 August 2017*
 
 * Improvement - Change labels & texts for easier use
