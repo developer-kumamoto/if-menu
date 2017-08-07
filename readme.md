@@ -9,6 +9,8 @@ If Menu
 
 The plugin is easy to use, each menu item will have a “Change menu item visibility” option which will enable the selection of rules.
 
+
+
 ## Features
 
 * Basic set of visibility rules
@@ -21,6 +23,8 @@ The plugin is easy to use, each menu item will have a “Change menu item visibi
   * show if `User is logged in` AND `Device is mobile`
   * show if `User is Admin` AND `Is front page`
 * Support for adding your custom rules
+
+
 
 ## Adding custom rules in a plugin or theme
 
@@ -45,4 +49,8 @@ function my_new_menu_conditions($conditions) {
 }
 ```
 
-[WordPress plugin page](https://wordpress.org/plugins/if-menu/)
+
+
+## WordPress.org
+
+Head over to [plugin page on WordPress.org](https://wordpress.org/plugins/if-menu/) for more info, reviews and support.
