@@ -29,22 +29,17 @@ License: GPL2
 
 class If_Menu {
 
-	protected static $has_custom_walker = null;
-
 	public static function init() {
     global $pagenow;
 
-    load_plugin_textdomain( 'if-menu', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+    load_plugin_textdomain('if-menu', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
-		if( is_admin() ) {
-			add_action( 'admin_enqueue_scripts', 'If_Menu::admin_init' );
-			add_action( 'wp_update_nav_menu_item', 'If_Menu::wp_update_nav_menu_item', 10, 2 );
-			add_filter( 'wp_edit_nav_menu_walker', 'If_Menu::custom_walker' ); 
-      add_action( 'wp_nav_menu_item_custom_fields', 'If_Menu::menu_item_fields' );
-      add_action( 'wp_nav_menu_item_custom_title', 'If_Menu::menu_item_title' );
-
-      add_action( 'admin_notices', 'If_Menu::admin_notice' );
-      add_action( 'wp_ajax_if_menu_hide_notice', 'If_Menu::hide_admin_notice' );
+		if (is_admin()) {
+			add_action('admin_enqueue_scripts', 'If_Menu::admin_init');
+			add_action('wp_update_nav_menu_item', 'If_Menu::wp_update_nav_menu_item', 10, 2);
+			add_filter('wp_edit_nav_menu_walker', 'If_Menu::custom_walker'); 
+      add_action('wp_nav_menu_item_custom_fields', 'If_Menu::menu_item_fields');
+      add_action('wp_nav_menu_item_custom_title', 'If_Menu::menu_item_title');
 
       if ($pagenow !== 'nav-menus.php') {
         add_filter( 'wp_get_nav_menu_items', 'If_Menu::wp_get_nav_menu_items' );
@@ -53,37 +48,6 @@ class If_Menu {
       add_filter( 'wp_get_nav_menu_items', 'If_Menu::wp_get_nav_menu_items' );
     }
 	}
-
-  public static function admin_notice() {
-
-    if( current_user_can( 'edit_theme_options' ) && has_filter( 'wp_edit_nav_menu_walker' ) && 1 != get_option( 'if-menu-hide-notice', 0 ) ) {
-      ?>
-      <div class="notice error is-dismissible if-menu-notice">
-				<p><?php printf(
-					wp_kses(
-						/* translators: error message for plugin conflict. */
-						__( 'If Menu plugin detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu' ),
-						array(
-							'a' => array(
-								'href' => array(),
-							),
-						)
-					),
-					esc_url( 'https://wordpress.org/plugins/if-menu/faq/' )
-				) ?></p>
-      </div>
-      <?php
-    }
-
-  }
-
-  public static function hide_admin_notice() {
-    $re = update_option( 'if-menu-hide-notice', 1 );
-
-    echo $re ? 1 : 0;
-
-    wp_die();
-  }
 
 	public static function get_conditions( $for_testing = false ) {
 		$conditions = apply_filters( 'if_menu_conditions', array() );
@@ -144,11 +108,20 @@ class If_Menu {
 	public static function admin_init() {
 		global $pagenow;
 
-    if ( $pagenow == 'nav-menus.php' ) {
-      wp_enqueue_script( 'if-menu-js', plugins_url( 'assets/if-menu.js', __FILE__ ), array( 'jquery' ) );
-      wp_enqueue_style( 'if-menu-css', plugins_url( 'assets/if-menu.css', __FILE__ ) );
-    }
+    if ($pagenow == 'nav-menus.php') {
+      wp_enqueue_script('if-menu-js', plugins_url('assets/if-menu.js', __FILE__), ['jquery']);
+      wp_enqueue_style('if-menu-css', plugins_url('assets/if-menu.css', __FILE__));
 
+      wp_localize_script('if-menu-js', 'IfMenu', [
+        'conflictErrorMessage'  =>  sprintf(
+          wp_kses(
+            __('<strong>If Menu</strong> detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu'),
+            ['a' => ['href' => []], 'strong' => []]
+          ),
+          esc_url('https://wordpress.org/plugins/if-menu/faq/')
+        )
+      ]);
+    }
 	}
 
   public static function menu_item_fields( $item_id ) {

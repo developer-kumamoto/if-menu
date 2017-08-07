@@ -1,6 +1,7 @@
 jQuery(function($) {
 
 
+	// Show or hide conditions section
 	$('body').on('change', '.menu-item-if-menu-enable', function() {
 		$( this ).closest( '.if-menu-enable' ).next().toggle( $( this ).prop( 'checked' ) );
 
@@ -12,6 +13,7 @@ jQuery(function($) {
 	});
 
 
+	// Show or hide conditions section for multiple rules
 	$('body').on( 'change', '.menu-item-if-menu-enable-next', function() {
 		var elCondition = $( this ).closest( '.if-menu-condition' );
 
@@ -23,13 +25,10 @@ jQuery(function($) {
 	});
 
 
-	$('.wrap').on('click', '.if-menu-notice button', function() {
-		$.post( ajaxurl, { action: 'if_menu_hide_notice' }, function( response ) {
-			if ( response != 1 ) {
-				alert( 'If Menu: Error trying to hide the notice - ' + response );
-			}
-		} );
-	});
+	// Check if menu extra fields are actually displayed
+	if ($('#menu-to-edit li').length !== $('#menu-to-edit li .if-menu-enable').length) {
+		$('<div class="notice error is-dismissible if-menu-notice"><p>' + IfMenu.conflictErrorMessage + '</p></div>').insertAfter('.wp-header-end');
+	}
 
 
 });
