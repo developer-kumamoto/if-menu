@@ -145,7 +145,7 @@ class If_Menu {
     <p class="if-menu-enable description description-wide">
       <label>
         <input <?php if (isset($if_menu_enable[0])) checked( $if_menu_enable[0], 1 ) ?> type="checkbox" value="1" class="menu-item-if-menu-enable" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]" />
-        <?php esc_html_e( 'Enable Conditional Logic', 'if-menu' ) ?>
+        <?php esc_html_e( 'Change menu item visibility', 'if-menu' ) ?>
       </label>
     </p>
 
@@ -167,9 +167,11 @@ class If_Menu {
             <?php endforeach ?>
           </select>
           <select class="menu-item-if-menu-enable-next" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]">
-            <option value="false">..</option>
+            <option value="false">+</option>
             <option value="and" <?php if (isset($if_menu_enable[$index + 1])) selected( 'and', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'AND', 'if-menu' ) ?></option>
-            <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>
+            <?php if ($if_menu_enable[$index + 1] == 'or') : ?>
+              <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>-->
+            <?php endif ?>
           </select>
         </p>
       <?php endfor ?>
@@ -184,15 +186,16 @@ class If_Menu {
     if ( count( $if_menu_enabled ) && $if_menu_enabled[0] !== '0' ) {
       $conditionTypes = get_post_meta( $item_id, 'if_menu_condition_type' );
       $conditions = get_post_meta( $item_id, 'if_menu_condition' );
+      $rules = If_Menu::get_conditions($for_testing = true);
 
       if ( $conditionTypes[0] === 'show' ) {
         $conditionTypes[0] = '';
       }
 
       echo '<span class="is-submenu">';
-      printf( __( '%s if %s', 'if-menu' ), $conditionTypes[0], $conditions[0] );
+      printf( __( '%s if %s', 'if-menu' ), $conditionTypes[0], $rules[$conditions[0]]['name'] );
       if ( count( $if_menu_enabled ) > 1 ) {
-        printf( ' ' . _n( 'and 1 more condition', 'and %d more conditions', count( $if_menu_enabled ) - 1, 'if-menu' ), count( $if_menu_enabled ) - 1 );
+        printf( ' ' . _n( 'and 1 more rule', 'and %d more rules', count( $if_menu_enabled ) - 1, 'if-menu' ), count( $if_menu_enabled ) - 1 );
       }
       echo '</span>';
     }
@@ -245,4 +248,4 @@ include 'conditions.php';
 	Run the plugin
 ------------------------------------------------ */
 
-add_action( 'plugins_loaded', 'If_Menu::init' );
+add_action('plugins_loaded', 'If_Menu::init');
