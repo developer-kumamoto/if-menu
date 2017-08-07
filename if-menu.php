@@ -37,7 +37,7 @@ class If_Menu {
 		if (is_admin()) {
 			add_action('admin_enqueue_scripts', 'If_Menu::admin_init');
 			add_action('wp_update_nav_menu_item', 'If_Menu::wp_update_nav_menu_item', 10, 2);
-			add_filter('wp_edit_nav_menu_walker', 'If_Menu::custom_walker'); 
+			add_filter('wp_edit_nav_menu_walker', 'If_Menu::customWalker'); 
       add_action('wp_nav_menu_item_custom_fields', 'If_Menu::menu_item_fields');
       add_action('wp_nav_menu_item_custom_title', 'If_Menu::menu_item_title');
 
@@ -201,15 +201,17 @@ class If_Menu {
     }
   }
 
-  public static function custom_walker(){
+  public static function customWalker() {
     global $wp_version;
-    if ( version_compare( $wp_version, '4.7.0', '>=' ) ){
-      require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu-4.5.php' );
-    } else if ( version_compare( $wp_version, '4.5.0', '>=' ) ){
-      require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu-4.5.php' );
+
+    if (version_compare( $wp_version, '4.7.0', '>=')) {
+      require_once(plugin_dir_path(__FILE__) . 'if-menu-nav-menu-4.7.php');
+    } elseif ( version_compare( $wp_version, '4.5.0', '>=' ) ){
+      require_once(plugin_dir_path(__FILE__) . 'if-menu-nav-menu-4.5.php');
     } else {
-      require_once( plugin_dir_path( __FILE__ ) . 'if-menu-nav-menu.php' );
+      require_once(plugin_dir_path(__FILE__) . 'if-menu-nav-menu.php');
     }
+
     return 'If_Menu_Walker_Nav_Menu_Edit';
   }
 

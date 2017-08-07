@@ -26,7 +26,6 @@ class If_Menu_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
   public function start_el( &$output, $item, $depth = 0, $args = array(), $id = 0 ) {
     global $_wp_nav_menu_max_depth;
     $_wp_nav_menu_max_depth = $depth > $_wp_nav_menu_max_depth ? $depth : $_wp_nav_menu_max_depth;
-
     ob_start();
     $item_id = esc_attr( $item->ID );
     $removed_args = array(
@@ -37,7 +36,6 @@ class If_Menu_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
       'page-tab',
       '_wpnonce',
     );
-
     $original_title = false;
     if ( 'taxonomy' == $item->type ) {
       $original_title = get_term_field( 'name', $item->object_id, $item->object, 'raw' );
@@ -52,15 +50,12 @@ class If_Menu_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
         $original_title = $original_object->labels->archives;
       }
     }
-
     $classes = array(
       'menu-item menu-item-depth-' . $depth,
       'menu-item-' . esc_attr( $item->object ),
       'menu-item-edit-' . ( ( isset( $_GET['edit-menu-item'] ) && $item_id == $_GET['edit-menu-item'] ) ? 'active' : 'inactive'),
     );
-
     $title = $item->title;
-
     if ( ! empty( $item->_invalid ) ) {
       $classes[] = 'menu-item-invalid';
       /* translators: %s: title of menu item which is invalid */
@@ -70,18 +65,23 @@ class If_Menu_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
       /* translators: %s: title of menu item in draft status */
       $title = sprintf( __('%s (Pending)'), $item->title );
     }
-
     $title = ( ! isset( $item->label ) || '' == $item->label ) ? $title : $item->label;
-
     $submenu_text = '';
     if ( 0 == $depth )
       $submenu_text = 'style="display: none;"';
-
     ?>
     <li id="menu-item-<?php echo $item_id; ?>" class="<?php echo implode(' ', $classes ); ?>">
       <div class="menu-item-bar">
         <div class="menu-item-handle">
-          <span class="item-title"><span class="menu-item-title"><?php echo esc_html( $title ); ?></span> <span class="is-submenu" <?php echo $submenu_text; ?>><?php _e( 'sub item' ); ?></span></span>
+          <span class="item-title">
+            <span class="menu-item-title"><?php echo esc_html( $title ); ?></span>
+            <span class="is-submenu" <?php echo $submenu_text; ?>><?php _e( 'sub item' ); ?></span>
+            <?php
+            // This is the added section
+            do_action( 'wp_nav_menu_item_custom_title', $item_id, $item, $depth, $args );
+            // end added section
+            ?>
+          </span>
           <span class="item-controls">
             <span class="item-type"><?php echo esc_html( $item->type_label ); ?></span>
             <span class="item-order hide-if-js">
@@ -166,9 +166,9 @@ class If_Menu_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
         </p>
 
         <?php
-          // This is the added section
-          do_action( 'wp_nav_menu_item_custom_title', $item_id, $item, $depth, $args );
-          // end added section
+        // This is the added section
+        do_action( 'wp_nav_menu_item_custom_fields', $item_id, $item, $depth, $args );
+        // end added section
         ?>
 
         <fieldset class="field-move hide-if-no-js description description-wide">
