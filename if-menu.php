@@ -3,7 +3,7 @@
 Plugin Name: If Menu
 Plugin URI: https://wordpress.org/plugins/if-menu/
 Description: Show/hide menu items with conditional statements
-Version: 0.6.1
+Version: 0.6.2
 Text Domain: if-menu
 Author: Layered
 Author URI: https://layered.studio
@@ -109,18 +109,18 @@ class If_Menu {
 		global $pagenow;
 
     if ($pagenow == 'nav-menus.php') {
-      wp_enqueue_script('if-menu-js', plugins_url('assets/if-menu.js', __FILE__), ['jquery']);
+      wp_enqueue_script('if-menu-js', plugins_url('assets/if-menu.js', __FILE__), array('jquery'));
       wp_enqueue_style('if-menu-css', plugins_url('assets/if-menu.css', __FILE__));
 
-      wp_localize_script('if-menu-js', 'IfMenu', [
+      wp_localize_script('if-menu-js', 'IfMenu', array(
         'conflictErrorMessage'  =>  sprintf(
           wp_kses(
             __('<strong>If Menu</strong> detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu'),
-            ['a' => ['href' => []], 'strong' => []]
+            array('a' => array('href' => array()), 'strong' => array())
           ),
           esc_url('https://wordpress.org/plugins/if-menu/faq/')
         )
-      ]);
+      ));
     }
 	}
 
@@ -169,9 +169,7 @@ class If_Menu {
           <select class="menu-item-if-menu-enable-next" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]">
             <option value="false">+</option>
             <option value="and" <?php if (isset($if_menu_enable[$index + 1])) selected( 'and', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'AND', 'if-menu' ) ?></option>
-            <?php if ($if_menu_enable[$index + 1] == 'or') : ?>
-              <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>-->
-            <?php endif ?>
+            <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>-->
           </select>
         </p>
       <?php endfor ?>

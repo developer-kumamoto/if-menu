@@ -87,13 +87,20 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 == Screenshots ==
 
 1. Enable visibility rules for Menu Items
+2. Example of visibility rules
 
 == Changelog ==
+
+= 0.6.2 =
+*Release Date - 8 August 2017*
+
+* Fix - Backwards compatibility with PHP < 5.4
 
 = 0.6.1 =
 *Release Date - 7 August 2017*
 
 * Improvement - Change labels & texts for easier use
+* Improvement - Better compatibility with latest versions of WordPress
 * Improvement - Better compatibility with translation plugins
 * Fix - Detection for conflict with other plugins
 
