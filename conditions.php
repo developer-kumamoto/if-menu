@@ -71,5 +71,15 @@ function if_menu_basic_conditions($conditions) {
 		'group'		=>	__('Device', 'if-menu')
 	);
 
+
+	// Language
+	$conditions[] = array(
+		'id'		=>	'language-is-rtl',
+		'name'		=>	__('Is RTL', 'if-menu'),
+		'condition'	=>	'is_rtl',
+		'group'		=>	__('Language', 'if-menu')
+	);
+
+
 	return $conditions;
 }
