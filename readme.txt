@@ -13,9 +13,9 @@ Display or hide menu items with user-defines rules
 
 **If Menu** is a WordPress plugin which adds extra functionality for menu items, making it easy to hide or display menu items based on user-defined rules. Example:
 
-* display a menu item only if current `User is logged in`
-* hide menu items if `visiting from mobile device`
-* display menu items just for `Admins and Editors`
+* Display a menu item only if current `User is logged in`
+* Hide menu items if `visiting from mobile device`
+* Display menu items just for `Admins and Editors`
 
 The plugin is easy to use, each menu item will have a “Change menu item visibility” option which will enable the selection of rules (example in Screenshots).
 
@@ -26,6 +26,7 @@ The plugin is easy to use, each menu item will have a “Change menu item visibi
   * User roles `Admin` `Editor` `Author` etc
   * Page type `Front page` `Single page` `Single post`
   * Device `Is Mobile`
+  * Language `Is RTL`
   * *more to be added with each plugin update*
 * Multiple rules - mix multiple rules for a menu item visibility
   * show if `User is logged in` AND `Device is mobile`
@@ -90,6 +91,12 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 2. Example of visibility rules
 
 == Changelog ==
+
+= 0.6.3 =
+*Release Date - 17 August 2017*
+
+* New visibility rule - Language Is RTL
+* Fix - Single rule works on servers with Eval disabled
 
 = 0.6.2 =
 *Release Date - 8 August 2017*

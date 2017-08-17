@@ -3,7 +3,7 @@
 Plugin Name: If Menu
 Plugin URI: https://wordpress.org/plugins/if-menu/
 Description: Show/hide menu items with conditional statements
-Version: 0.6.2
+Version: 0.6.3
 Text Domain: if-menu
 Author: Layered
 Author URI: https://layered.studio

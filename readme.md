@@ -18,6 +18,7 @@ The plugin is easy to use, each menu item will have a “Change menu item visibi
   * User roles `Admin` `Editor` `Author` etc
   * Page type `Front page` `Single page` `Single post`
   * Device `Is Mobile`
+  * Language `Is RTL`
   * *more to be added with each plugin update*
 * Multiple rules - mix multiple rules for a menu item visibility
   * show if `User is logged in` AND `Device is mobile`
@@ -38,9 +39,9 @@ add_filter('if_menu_conditions', 'my_new_menu_conditions');
 function my_new_menu_conditions($conditions) {
 
   $conditions[] = array(
-    'id'        =>  'single-my-custom-post-type',          	// unique ID for the condition
-    'name'      =>  __('Single my-CPT', 'i18n-domain'),		// name of the condition
-    'condition' =>  function($item) {                      	// callback - must return Boolean
+    'id'        =>  'single-my-custom-post-type',           // unique ID for the condition
+    'name'      =>  __('Single my-CPT', 'i18n-domain'),     // name of the condition
+    'condition' =>  function($item) {                       // callback - must return Boolean
       return is_singular('my-custom-post-type');
     }
   );
