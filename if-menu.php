@@ -64,20 +64,20 @@ class If_Menu {
 		return $conditions;
 	}
 
-	public static function wp_get_nav_menu_items( $items ) {
-		$conditions = If_Menu::get_conditions( $for_testing = true );
+	public static function wp_get_nav_menu_items($items) {
+		$conditions = If_Menu::get_conditions($for_testing = true);
 		$hidden_items = array();
 
-		foreach ( $items as $key => $item ) {
-			if ( in_array( $item->menu_item_parent, $hidden_items ) ) {
-				unset( $items[$key] );
+		foreach ($items as $key => $item) {
+			if (in_array($item->menu_item_parent, $hidden_items)) {
+				unset($items[$key]);
 				$hidden_items[] = $item->ID;
 			} else {
-        $enabled = get_post_meta( $item->ID, 'if_menu_enable' );
+        $enabled = get_post_meta($item->ID, 'if_menu_enable');
 
         if ($enabled && $enabled[0] !== '0') {
-          $if_condition_types = get_post_meta( $item->ID, 'if_menu_condition_type' );
-          $if_conditions = get_post_meta( $item->ID, 'if_menu_condition' );
+          $if_condition_types = get_post_meta($item->ID, 'if_menu_condition_type');
+          $if_conditions = get_post_meta($item->ID, 'if_menu_condition');
 
           $eval = array();
 
@@ -88,14 +88,16 @@ class If_Menu {
               $singleCondition .= $operator . ' ';
             }
 
-            $singleCondition .= $if_condition_types[$index] === 'show' ? '' : '!';
-            $singleCondition .= call_user_func( $conditions[$if_conditions[$index]]['condition'], $item ) ? 1 : 0;
+            $bit1 = $if_condition_types[$index] === 'show' ? 1 : 0;
+            $bit2 = $if_condition_types[$index] === 'show' ? 0 : 1;
+
+            $singleCondition .= call_user_func($conditions[$if_conditions[$index]]['condition'], $item) ? $bit1 : $bit2;
 
             $eval[] = $singleCondition;
           }
 
-          if ( $eval && ! eval( 'return ' . implode( ' ', $eval ) . ';' ) ) {
-            unset( $items[$key] );
+          if ((count($eval) === 1 && $eval[0] == 0) || (count($eval) > 1 && !eval('return ' . implode(' ', $eval) . ';'))) {
+            unset($items[$key]);
             $hidden_items[] = $item->ID;
           }
         }
