@@ -55,9 +55,9 @@ class If_Menu {
 		if ($for_testing) {
 			$c2 = array();
 			foreach ($conditions as $condition) {
-        $c2[$condition['id']] = $condition;
-        $c2[$condition['name']] = $condition;
-      }
+				$c2[$condition['id']] = $condition;
+				$c2[$condition['name']] = $condition;
+			}
 			$conditions = $c2;
 		}
 
@@ -68,39 +68,52 @@ class If_Menu {
 		$conditions = If_Menu::get_conditions($for_testing = true);
 		$hidden_items = array();
 
+		$canPeak = get_option('if-menu-peak') && current_user_can('edit_theme_options');
+
 		foreach ($items as $key => $item) {
+
 			if (in_array($item->menu_item_parent, $hidden_items)) {
-				unset($items[$key]);
+				if ($canPeak) {
+					$item->classes[] = 'if-menu-peak';
+				} else {
+					unset($items[$key]);
+				}
 				$hidden_items[] = $item->ID;
 			} else {
-        $enabled = get_post_meta($item->ID, 'if_menu_enable');
+				$enabled = get_post_meta($item->ID, 'if_menu_enable');
 
-        if ($enabled && $enabled[0] !== '0') {
-          $if_condition_types = get_post_meta($item->ID, 'if_menu_condition_type');
-          $if_conditions = get_post_meta($item->ID, 'if_menu_condition');
+				if ($enabled && $enabled[0] !== '0') {
+					$if_condition_types = get_post_meta($item->ID, 'if_menu_condition_type');
+					$if_conditions = get_post_meta($item->ID, 'if_menu_condition');
 
-          $eval = array();
+					$eval = array();
 
-          foreach ($enabled as $index => $operator) {
-            $singleCondition = '';
+					foreach ($enabled as $index => $operator) {
+						$singleCondition = '';
 
-            if ($index) {
-              $singleCondition .= $operator . ' ';
-            }
+						if ($index) {
+							$singleCondition .= $operator . ' ';
+						}
 
-            $bit1 = $if_condition_types[$index] === 'show' ? 1 : 0;
-            $bit2 = $if_condition_types[$index] === 'show' ? 0 : 1;
+						$bit1 = $if_condition_types[$index] === 'show' ? 1 : 0;
+						$bit2 = $if_condition_types[$index] === 'show' ? 0 : 1;
 
-            $singleCondition .= call_user_func($conditions[$if_conditions[$index]]['condition'], $item) ? $bit1 : $bit2;
+						$singleCondition .= call_user_func($conditions[$if_conditions[$index]]['condition'], $item) ? $bit1 : $bit2;
 
-            $eval[] = $singleCondition;
-          }
+						$eval[] = $singleCondition;
+					}
 
-          if ((count($eval) === 1 && $eval[0] == 0) || (count($eval) > 1 && !eval('return ' . implode(' ', $eval) . ';'))) {
-            unset($items[$key]);
-            $hidden_items[] = $item->ID;
-          }
-        }
+					if ((count($eval) === 1 && $eval[0] == 0) || (count($eval) > 1 && !eval('return ' . implode(' ', $eval) . ';'))) {
+						if ($canPeak) {
+								$item->classes[] = 'if-menu-peak';
+								$item->attr_title = __('If Menu peak - this menu item should be hidden', 'if-menu');
+								$item->description = __('If Menu peak - this menu item should be hidden', 'if-menu');
+							} else {
+								unset($items[$key]);
+							}
+						$hidden_items[] = $item->ID;
+					}
+				}
 			}
 		}
 
@@ -154,7 +167,8 @@ class If_Menu {
     <div class="if-menu-conditions" style="display: <?php echo $if_menu_enable[0] ? 'block' : 'none' ?>">
       <?php for ($index = 0; $index < count($if_menu_enable); $index++) : ?>
         <p class="if-menu-condition description description-wide">
-          <select class="menu-item-if-menu-condition-type" id="edit-menu-item-if-menu-condition-type-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition-type[<?php echo esc_html( $item_id ); ?>][]">
+          <span class="if-menu-condition-rule">
+          <select class="menu-item-if-menu-condition-type" id="edit-menu-item-if-menu-condition-type-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition-type[<?php echo esc_html( $item_id ); ?>][]" data-val="<?php echo esc_html($if_menu_condition_type[$index]) ?>">
             <option <?php selected( 'show', $if_menu_condition_type[$index] ) ?> value="show"><?php esc_html_e( 'Show', 'if-menu' ) ?></option>
             <option <?php selected( 'hide', $if_menu_condition_type[$index] ) ?> value="hide"><?php esc_html_e( 'Hide', 'if-menu' ) ?></option>
           </select>
