@@ -327,6 +327,10 @@ class If_Menu {
     }
   }
 
+	public static function pluginActivate() {
+		add_option('if-menu-peak', 1);
+	}
+
 }
 
 
@@ -343,4 +347,5 @@ include 'conditions.php';
 	Run the plugin
 ------------------------------------------------ */
 
+register_activation_hook(__FILE__, array('If_Menu', 'pluginActivate'));
 add_action('plugins_loaded', 'If_Menu::init');
