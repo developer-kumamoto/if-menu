@@ -1,4 +1,18 @@
 
+.if-menu-wrap ul {
+	list-style: circle;
+	padding-left: 20px;
+}
+
+.if-menu-wrap .about-text {
+	margin-right: 0;
+}
+
+.if-menu-wrap .two-col,
+.if-menu-wrap .three-col {
+	align-items: flex-start;
+}
+
 .if-menu-conditions {
 	border-left: 1px solid #ddd;
 	clear: both;
