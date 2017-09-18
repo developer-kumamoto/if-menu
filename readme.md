@@ -3,9 +3,9 @@ If Menu
 
 **If Menu** is a WordPress plugin which adds extra functionality for menu items, making it easy to hide or display menu items based on user-defined rules. Example:
 
-* display a menu item only if current `User is logged in`
-* hide menu items if `visiting from mobile device`
-* display menu items just for `Admins and Editors`
+* Display a menu item only if current `User is logged in`
+* Hide menu items if `visiting from mobile device`
+* Display menu items just for `Admins and Editors`
 
 The plugin is easy to use, each menu item will have a “Change menu item visibility” option which will enable the selection of rules.
 
@@ -27,9 +27,9 @@ The plugin is easy to use, each menu item will have a “Change menu item visibi
 
 
 
-## Adding custom rules in a plugin or theme
+## Adding custom visibility rules in a plugin or theme
 
-Custom rules can be added easily by any plugin or theme.
+Custom visibility rules can be added easily by any plugin or theme.
 Example of adding a new rule for displaying/hiding a menu item when current page is a custom-post-type.
 
 ```

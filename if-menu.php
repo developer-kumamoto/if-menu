@@ -3,7 +3,7 @@
 Plugin Name: If Menu
 Plugin URI: https://wordpress.org/plugins/if-menu/
 Description: Show/hide menu items with conditional statements
-Version: 0.6.3
+Version: 0.7
 Text Domain: if-menu
 Author: Layered
 Author URI: https://layered.studio
@@ -199,7 +199,7 @@ class If_Menu {
 								<fieldset>
 									<label><input type="checkbox" name="if-menu-peak" value="1" <?php checked($ifMenuPeak, 1) ?>> <?php _e('Enable If Menu peak', 'if-menu') ?></label><br>
 								</fieldset>
-								<p class="description"><?php _e('Let administrators preview hidden menu items on website', 'if-menu') ?></p>
+								<p class="description"><?php _e('Let administrators preview hidden menu items on website (useful for testing)', 'if-menu') ?></p>
 							</td>
 						</tr>
 					</tbody>

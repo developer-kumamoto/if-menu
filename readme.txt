@@ -11,7 +11,7 @@ Display or hide menu items with user-defines rules
 
 == Description ==
 
-**If Menu** is a WordPress plugin which adds extra functionality for menu items, making it easy to hide or display menu items based on user-defined rules. Example:
+**If Menu** plugin adds extra functionality for menu items, making it easy to hide or display them based on user-defined rules. Example:
 
 * Display a menu item only if current `User is logged in`
 * Hide menu items if `visiting from mobile device`
@@ -33,7 +33,7 @@ The plugin is easy to use, each menu item will have a “Change menu item visibi
   * show if `User is Admin` AND `Is front page`
 * Support for adding your custom rules
 
-Example of adding a new rule is described in the FAQ section
+Example of adding a new visibility rule is described in the FAQ section
 
 == Installation ==
 
@@ -54,7 +54,7 @@ This is an ongoing [issue with WordPress](http://core.trac.wordpress.org/ticket/
 Try to use just one plugin that changes functionality for menu items.
 
 
-= How can I add a custom rule for menu items? =
+= How can I add a custom visibility rule for menu items? =
 
 New rules can be added by any other plugin or theme.
 
@@ -91,6 +91,13 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 2. Example of visibility rules
 
 == Changelog ==
+
+= 0.7 =
+*Release Date - 18 September 2017*
+
+* Enhancement - Nicer styling for visibility rules
+* Added - Peak option - Let admins preview hidden menu items
+* Added - Settings page
 
 = 0.6.3 =
 *Release Date - 17 August 2017*
