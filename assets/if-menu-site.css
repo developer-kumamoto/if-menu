@@ -10,16 +10,16 @@
 	}
 }
 
-.if-menu-peak {
+.if-menu-peek {
 	position: relative;
 }
 
-.if-menu-peak a {
+.if-menu-peek a {
 	opacity: 0.8;
 }
 
-.if-menu-peak::before {
-	content: "If Menu peak";
+.if-menu-peek::before {
+	content: "If Menu peek";
 	position: absolute;
 	text-align: center;
 	top: 50%;
@@ -35,11 +35,11 @@
 	pointer-events: none;
 }
 
-.if-menu-peak:hover::before {
+.if-menu-peek:hover::before {
 	animation: ifMenuFadeIn ease-in-out .2s forwards;
 }
 
-.if-menu-peak::after {
+.if-menu-peek::after {
 	content: "";
 	position: absolute;
 	width: 20px;

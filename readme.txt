@@ -96,7 +96,7 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 *Release Date - 18 September 2017*
 
 * Enhancement - Nicer styling for visibility rules
-* Added - Peak option - Let admins preview hidden menu items
+* Added - Peek option - Let admins preview hidden menu items
 * Added - Settings page
 
 = 0.6.3 =
