@@ -27,6 +27,16 @@ License: GPL2
 */
 
 
+
+// useful debug helpers
+if (!function_exists('print_pre')) {
+	function print_pre($expression) {
+		printf('<pre>%s</pre>', print_r($expression, true));
+	}
+}
+
+
+
 class If_Menu {
 
 	public static function init() {
@@ -73,7 +83,7 @@ class If_Menu {
 		$conditions = If_Menu::get_conditions($for_testing = true);
 		$hidden_items = array();
 
-		$canPeek = get_option('if-menu-peak') && current_user_can('edit_theme_options');
+		$canPeek = is_user_logged_in() && get_option('if-menu-peak') && current_user_can('edit_theme_options');
 
 		foreach ($items as $key => $item) {
 
@@ -90,6 +100,7 @@ class If_Menu {
 				if ($enabled && $enabled[0] !== '0') {
 					$if_condition_types = get_post_meta($item->ID, 'if_menu_condition_type');
 					$if_conditions = get_post_meta($item->ID, 'if_menu_condition');
+					$ifMenuOptions = get_post_meta($item->ID, 'if_menu_options');
 
 					$eval = array();
 
@@ -103,7 +114,13 @@ class If_Menu {
 						$bit1 = $if_condition_types[$index] === 'show' ? 1 : 0;
 						$bit2 = $if_condition_types[$index] === 'show' ? 0 : 1;
 
-						$singleCondition .= call_user_func($conditions[$if_conditions[$index]]['condition'], $item) ? $bit1 : $bit2;
+						$params = array($item);
+
+						if ($ifMenuOptions[$index]) {
+							$params[] = $ifMenuOptions[$index];
+						}
+
+						$singleCondition .= call_user_func_array($conditions[$if_conditions[$index]]['condition'], $params) ? $bit1 : $bit2;
 
 						$eval[] = $singleCondition;
 					}
@@ -111,7 +128,6 @@ class If_Menu {
 					if ((count($eval) === 1 && $eval[0] == 0) || (count($eval) > 1 && !eval('return ' . implode(' ', $eval) . ';'))) {
 						if ($canPeek) {
 								$item->classes[] = 'if-menu-peek';
-								$item->attr_title = __('If Menu peek - this menu item should be hidden', 'if-menu');
 							} else {
 								unset($items[$key]);
 							}
@@ -128,18 +144,20 @@ class If_Menu {
 		global $pagenow;
 
 		if ($pagenow == 'nav-menus.php' || $pagenow == 'themes.php') {
-		  wp_enqueue_script('if-menu-js', plugins_url('assets/if-menu.js', __FILE__), array('jquery'));
-		  wp_enqueue_style('if-menu-css', plugins_url('assets/if-menu.css', __FILE__));
+			wp_enqueue_script('if-menu', plugins_url('assets/if-menu.js', __FILE__), array('jquery'), '1.0');
+			wp_enqueue_script('select2', plugins_url('assets/select2.min.js', __FILE__), array('jquery'), '4.0.4');
+			wp_enqueue_style('if-menu', plugins_url('assets/if-menu.css', __FILE__), '1.0');
+			wp_enqueue_style('select2', plugins_url('assets/select2.min.css', __FILE__), '4.0.4');
 
-		  wp_localize_script('if-menu-js', 'IfMenu', array(
-		    'conflictErrorMessage'  =>  sprintf(
-		      wp_kses(
-		        __('<strong>If Menu</strong> detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu'),
-		        array('a' => array('href' => array()), 'strong' => array())
-		      ),
-		      esc_url('https://wordpress.org/plugins/if-menu/faq/')
-		    )
-		  ));
+			wp_localize_script('if-menu-js', 'IfMenu', array(
+				'conflictErrorMessage'  =>  sprintf(
+					wp_kses(
+						__('<strong>If Menu</strong> detected a conflict with another plugin or theme and may not work as expected. <a href="%s" target="_blank">Read more about the issue here</a>', 'if-menu'),
+						array('a' => array('href' => array()), 'strong' => array())
+					),
+					esc_url('https://wordpress.org/plugins/if-menu/faq/')
+				)
+			));
 		}
 	}
 
@@ -216,61 +234,79 @@ class If_Menu {
 		wp_enqueue_style('if-menu-site-css', plugins_url('assets/if-menu-site.css', __FILE__));
 	}
 
-  public static function menu_item_fields( $item_id ) {
-    $conditions = If_Menu::get_conditions();
-    $if_menu_enable = get_post_meta( $item_id, 'if_menu_enable' );
-    $if_menu_condition_type = get_post_meta( $item_id, 'if_menu_condition_type' );
-    $if_menu_condition = get_post_meta( $item_id, 'if_menu_condition' );
+	public static function menu_item_fields($item_id) {
+		$conditions = If_Menu::get_conditions();
+		$if_menu_enable = get_post_meta( $item_id, 'if_menu_enable' );
+		$if_menu_condition_type = get_post_meta( $item_id, 'if_menu_condition_type' );
+		$if_menu_condition = get_post_meta( $item_id, 'if_menu_condition' );
+		$ifMenuOptions = get_post_meta($item_id, 'if_menu_options');
 
-    if (!count($if_menu_enable)) {
-      $if_menu_enable[] = 0;
-      $if_menu_condition_type[] = '';
-      $if_menu_condition[] = '';
-    }
+		if (!count($if_menu_enable)) {
+			$if_menu_enable[] = 0;
+			$if_menu_condition_type[] = '';
+			$if_menu_condition[] = '';
+		}
 
-    $groupedConditions = array();
-    foreach ($conditions as $condition) {
-      $groupedConditions[isset($condition['group']) ? $condition['group'] : 'Custom'][] = $condition;
-    }
-    ?>
+		$groupedConditions = array();
+		foreach ($conditions as $condition) {
+			$groupedConditions[isset($condition['group']) ? $condition['group'] : 'Custom'][] = $condition;
+		}
+		?>
 
-    <p class="if-menu-enable description description-wide">
-      <label>
-        <input <?php if (isset($if_menu_enable[0])) checked( $if_menu_enable[0], 1 ) ?> type="checkbox" value="1" class="menu-item-if-menu-enable" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]" />
-        <?php esc_html_e( 'Change menu item visibility', 'if-menu' ) ?>
-      </label>
-    </p>
+		<p class="if-menu-enable description description-wide">
+			<label>
+				<input <?php if (isset($if_menu_enable[0])) checked( $if_menu_enable[0], 1 ) ?> type="checkbox" value="1" class="menu-item-if-menu-enable" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]" />
+				<?php esc_html_e( 'Change menu item visibility', 'if-menu' ) ?>
+			</label>
+		</p>
 
-    <div class="if-menu-conditions" style="display: <?php echo $if_menu_enable[0] ? 'block' : 'none' ?>">
-      <?php for ($index = 0; $index < count($if_menu_enable); $index++) : ?>
-        <p class="if-menu-condition description description-wide">
-          <span class="if-menu-condition-rule">
-          <select class="menu-item-if-menu-condition-type" id="edit-menu-item-if-menu-condition-type-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition-type[<?php echo esc_html( $item_id ); ?>][]" data-val="<?php echo esc_html($if_menu_condition_type[$index]) ?>">
-            <option <?php selected( 'show', $if_menu_condition_type[$index] ) ?> value="show"><?php esc_html_e( 'Show', 'if-menu' ) ?></option>
-            <option <?php selected( 'hide', $if_menu_condition_type[$index] ) ?> value="hide"><?php esc_html_e( 'Hide', 'if-menu' ) ?></option>
-          </select>
-          <?php esc_html_e( 'if', 'if-menu' ); ?>
-          <select class="menu-item-if-menu-condition" id="edit-menu-item-if-menu-condition-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition[<?php echo esc_attr( $item_id ); ?>][]">
-            <?php foreach ($groupedConditions as $group => $conditions) : ?>
-              <optgroup label="<?php echo esc_attr( $group ) ?>">
-                <?php foreach( $conditions as $condition ): ?>
-                  <option value="<?php echo $condition['id'] ?>" <?php selected( $condition['id'], $if_menu_condition[$index] ) ?> <?php selected( $condition['name'], $if_menu_condition[$index] ) ?>><?php echo esc_html( $condition['name'] ); ?></option>
-                <?php endforeach ?>
-              </optgroup>
-            <?php endforeach ?>
-          </select>
-          </span>
-          <select class="menu-item-if-menu-enable-next" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]">
-            <option value="false">+</option>
-            <option value="and" <?php if (isset($if_menu_enable[$index + 1])) selected( 'and', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'AND', 'if-menu' ) ?></option>
-            <option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>-->
-          </select>
-        </p>
-      <?php endfor ?>
-    </div>
+		<div class="if-menu-conditions" style="display: <?php echo $if_menu_enable[0] ? 'block' : 'none' ?>">
+			<?php for ($index = 0; $index < count($if_menu_enable); $index++) : ?>
 
-    <?php
-  }
+				<p class="if-menu-condition description description-wide" data-menu-item-id="<?php echo $item_id ?>">
+					<?php
+					$selectedCondition = null;
+					?>
+					<span class="if-menu-condition-rule">
+						<select class="menu-item-if-menu-condition-type" id="edit-menu-item-if-menu-condition-type-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition-type[<?php echo esc_html( $item_id ); ?>][]" data-val="<?php echo esc_html($if_menu_condition_type[$index]) ?>">
+							<option <?php selected( 'show', $if_menu_condition_type[$index] ) ?> value="show"><?php esc_html_e( 'Show', 'if-menu' ) ?></option>
+							<option <?php selected( 'hide', $if_menu_condition_type[$index] ) ?> value="hide"><?php esc_html_e( 'Hide', 'if-menu' ) ?></option>
+						</select>
+						<?php esc_html_e( 'if', 'if-menu' ); ?>
+						<select class="menu-item-if-menu-condition" id="edit-menu-item-if-menu-condition-<?php echo esc_attr( $item_id ); ?>" name="menu-item-if-menu-condition[<?php echo esc_attr( $item_id ); ?>][]">
+							<?php foreach ($groupedConditions as $group => $conditions) : ?>
+								<optgroup label="<?php echo esc_attr($group) ?>">
+									<?php foreach($conditions as $condition) : ?>
+										<?php
+										if ($condition['id'] === $if_menu_condition[$index]) {
+											$selectedCondition = $condition;
+										}
+										?>
+										<option value="<?php echo $condition['id'] ?>" <?php selected($condition['id'], $if_menu_condition[$index]) ?> <?php selected($condition['name'], $if_menu_condition[$index]) ?> data-options='<?php if (isset($condition['options'])) echo json_encode($condition['options']) ?>'><?php echo esc_html($condition['name']) ?></option>
+									<?php endforeach ?>
+								</optgroup>
+							<?php endforeach ?>
+						</select>
+					</span>
+					<select class="menu-item-if-menu-enable-next" name="menu-item-if-menu-enable[<?php echo esc_attr( $item_id ); ?>][]">
+						<option value="false">+</option>
+						<option value="and" <?php if (isset($if_menu_enable[$index + 1])) selected( 'and', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'AND', 'if-menu' ) ?></option>
+						<option value="or" <?php if (isset($if_menu_enable[$index + 1])) selected( 'or', $if_menu_enable[$index + 1] ) ?>><?php esc_html_e( 'OR', 'if-menu' ) ?></option>-->
+					</select>
+					<?php if (isset($selectedCondition['options'])) : ?>
+						<select class="menu-item-if-menu-options" name="menu-item-if-menu-options[<?php echo esc_attr($item_id) ?>][<?php echo esc_attr($index) ?>][]" style="width: 305px" multiple>
+							<?php foreach ($selectedCondition['options'] as $value => $label) : ?>
+								<option value="<?php echo esc_attr($value) ?>" <?php if (in_array($value, $ifMenuOptions[$index])) echo 'selected' ?>><?php echo $label ?></option>
+							<?php endforeach ?>
+						</select>
+					<?php endif ?>
+				</p>
+
+			<?php endfor ?>
+		</div>
+
+		<?php
+	}
 
   public static function menu_item_title( $item_id ) {
     $if_menu_enabled = get_post_meta( $item_id, 'if_menu_enable' );
@@ -308,26 +344,32 @@ class If_Menu {
   }
 
 	public static function wp_update_nav_menu_item( $menu_id, $menu_item_db_id ) {
-    if (isset($_POST['menu-item-if-menu-enable'])) {
+		if (isset($_POST['menu-item-if-menu-enable'])) {
 
-      delete_post_meta( $menu_item_db_id, 'if_menu_enable' );
-      delete_post_meta( $menu_item_db_id, 'if_menu_condition_type' );
-      delete_post_meta( $menu_item_db_id, 'if_menu_condition' );
+			delete_post_meta($menu_item_db_id, 'if_menu_enable');
+			delete_post_meta($menu_item_db_id, 'if_menu_condition_type');
+			delete_post_meta($menu_item_db_id, 'if_menu_condition');
+			delete_post_meta($menu_item_db_id, 'if_menu_options');
 
-      foreach ( $_POST['menu-item-if-menu-enable'][$menu_item_db_id] as $index => $value ) {
-        if ( in_array( $value, array('1', 'and', 'or') ) ) {
-          add_post_meta( $menu_item_db_id, 'if_menu_enable', $value );
-          add_post_meta( $menu_item_db_id, 'if_menu_condition_type', $_POST['menu-item-if-menu-condition-type'][$menu_item_db_id][$index] );
-          add_post_meta( $menu_item_db_id, 'if_menu_condition', $_POST['menu-item-if-menu-condition'][$menu_item_db_id][$index] );
-        } else {
-          break;
-        }
-      }
-    }
-  }
+			foreach ($_POST['menu-item-if-menu-enable'][$menu_item_db_id] as $index => $value) {
+				if (in_array( $value, array('1', 'and', 'or'))) {
+					add_post_meta($menu_item_db_id, 'if_menu_enable', $value);
+					add_post_meta($menu_item_db_id, 'if_menu_condition_type', $_POST['menu-item-if-menu-condition-type'][$menu_item_db_id][$index]);
+					add_post_meta($menu_item_db_id, 'if_menu_condition', $_POST['menu-item-if-menu-condition'][$menu_item_db_id][$index]);
+					if (isset($_POST['menu-item-if-menu-options']) && isset($_POST['menu-item-if-menu-options'][$menu_item_db_id]) && isset($_POST['menu-item-if-menu-options'][$menu_item_db_id][$index])) {
+						add_post_meta($menu_item_db_id, 'if_menu_options', array_unique($_POST['menu-item-if-menu-options'][$menu_item_db_id][$index]));
+					} else {
+						add_post_meta($menu_item_db_id, 'if_menu_options', 0);
+					}
+				} else {
+					break;
+				}
+			}
+		}
+	}
 
 	public static function pluginActivate() {
-		add_option('if-menu-peak', 1);
+		add_option('if-menu-peak', 0);
 	}
 
 }
